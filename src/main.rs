@@ -1,3 +1,6 @@
-fn main() {
-    println!("Hello, world!");
+use crossterm::Result;
+pub mod event;
+fn main() -> Result<()> {
+    println!("Hello");
+    Ok(())
 }
