@@ -24,6 +24,10 @@ pub struct Event {
 #[derive(Debug, Clone, Copy)]
 pub enum BaseEvent{
     Closed,
+    NextSlide,
+    PrevSlide,
+    ScrollDown,
+    ScrollUp,
 }
 
 impl From<BaseEvent> for Event{
@@ -31,6 +35,10 @@ impl From<BaseEvent> for Event{
         Self {
             content: match value {
                 BaseEvent::Closed => "Closed",
+                BaseEvent::NextSlide => "NextSlide",
+                BaseEvent::PrevSlide => "PrevSlide",
+                BaseEvent::ScrollDown => "ScrollDown",
+                BaseEvent::ScrollUp => "ScrollUp",
                 _ => "",
             }.to_string()
         }
