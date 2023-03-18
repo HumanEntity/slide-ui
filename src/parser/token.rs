@@ -6,9 +6,10 @@ pub enum MdTokenType{
     Text,
 }
 
+#[derive(Debug, Clone)]
 pub struct MdToken{
-    ttype: MdTokenType,
-    content: String,
+    pub ttype: MdTokenType,
+    pub content: String,
 }
 
 impl MdToken{
