@@ -1,18 +1,18 @@
-use self::{token::{MdToken, MdTokenType}, presentation::Presentation};
+use self::{token::{MdToken, MdTokenType}, presentation::*};
 
 
 pub mod token;
 pub mod presentation;
 
 #[derive(Debug, Clone)]
-pub struct MdParser {
+pub struct MdLexer {
     content: String,
     start: usize,
     current: usize,
     line: usize,
 }
 
-impl MdParser{
+impl MdLexer{
     #[inline]
     pub fn new(content: String) -> Self {
         Self {
@@ -21,13 +21,6 @@ impl MdParser{
             current: 0,
             line: 0,
         }
-    }
-    pub fn parse(&mut self) -> Presentation {
-        let tokens = self.tokenize();
-        for x in tokens {
-            println!("{:#?}", x);
-        }
-        unreachable!()
     }
     //  Tokens
     /*
@@ -129,13 +122,19 @@ impl MdParser{
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Slide{
-    content: Vec<Hunk>,
+pub struct MdParser{
+    content: String,
 }
 
-#[derive(Debug, Clone)]
-pub struct Hunk{
-    content: String,
-    color: crossterm::style::Color,
+impl MdParser {
+    pub fn new(content: String) -> Self {
+        Self {
+            content
+        }
+    }
+
+    pub fn parse(&mut self) -> Presentation {
+        let tokens = MdLexer::new(self.content.clone()).tokenize();
+        unreachable!()
+    }
 }
