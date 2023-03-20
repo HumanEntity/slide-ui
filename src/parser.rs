@@ -1,3 +1,7 @@
+use crossterm::style::Color;
+
+use crate::new_slide;
+
 use self::{token::{MdToken, MdTokenType}, presentation::*};
 
 
@@ -51,8 +55,13 @@ impl MdLexer{
             return self.heading();
         }
 
+        if c == '<' {
+        if let Some(token) = self.new_slide() {
+            return token;
+        }
+        }
 
-        while self.peek_cnow() != '#' && self.current < self.content.len() {
+        while self.peek_cnow() != '#' && self.peek_cnow() != '\n' && self.current < self.content.len() {
             self.advance_char();
         }
         self.make_token(MdTokenType::Text)
@@ -61,6 +70,25 @@ impl MdLexer{
         // if self.current >= self.content.len() {
         //     return self.make_token(MdTokenType::Text);
         // }
+    }
+    pub fn new_slide(&mut self) -> Option<MdToken> {
+        println!("ns {}{}{}{}", self.peek_cnow(), self.peek_offset(1, 0), self.peek_offset(2, 0), self.peek_offset(3, 0));
+        println!("rest {}", self.content.get(self.current..self.content.len()).unwrap());
+        //if self.peek_cnow() == '<' {
+            if self.peek_cnow() == ':' {
+                println!("ok1");
+                self.advance_char();
+                if self.peek_cnow() == ')' {
+                    println!("ok2");
+                    self.advance_char();
+                    if self.peek_cnow() == '>' {
+                        self.advance_char();
+                        return Some(self.make_token(MdTokenType::NewSlide));
+                    }
+                }
+            }
+        //}
+        None
     }
     pub fn heading(&mut self) -> MdToken {
         let mut level: u8 = 1;
@@ -107,9 +135,12 @@ impl MdLexer{
             self.content.chars().collect::<Vec<_>>()[self.current]
         }
     }
+    pub fn peek_offset(&self, offset: usize, counter_offset: usize) -> char{
+        self.content.chars().collect::<Vec<_>>()[self.current+offset-counter_offset]
+    }
     pub fn skip_whitespace(&mut self) {
         loop {
-            println!("sw {:?}", self.peek_cnow());
+            // println!("sw {:?}", self.peek_cnow());
             match self.peek_cnow() {
                 ' ' | '\r'  => {self.advance_char();},
                 '\n' => {
@@ -135,6 +166,53 @@ impl MdParser {
 
     pub fn parse(&mut self) -> Presentation {
         let tokens = MdLexer::new(self.content.clone()).tokenize();
-        unreachable!()
+        let mut slides: Vec<Slide> = Vec::new(); slides.push(new_slide!());
+        let mut current = 0;
+        for token in tokens {
+            println!("{token:#?}");
+            let mut hunks = &mut slides[current].content;
+            match token.ttype {
+                MdTokenType::H1 => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::Red,
+                }),
+                MdTokenType::H2 => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::Green,
+                }),
+                MdTokenType::H3 => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::Yellow,
+                }),
+                MdTokenType::H4 => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::Blue,
+                }),
+                MdTokenType::H5 => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::Magenta,
+                }),
+                MdTokenType::H6 => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::Cyan,
+                }),
+                MdTokenType::Text => hunks.push(Hunk {
+                    content: token.content,
+                    bg_color: Color::Black,
+                    fg_color: Color::White,
+                }),
+                MdTokenType::NewSlide => {
+                    current+=1;
+                    slides.push(new_slide!());
+                }
+            }
+        }
+        Presentation::new(slides)
     }
 }
