@@ -40,7 +40,6 @@ impl MdLexer{
     pub fn tokenize(&mut self) -> Vec<MdToken> {
         let mut tokens: Vec<MdToken> = Vec::new();
         while self.current < self.content.len() - 1 {
-            println!("New Token");
             tokens.push(self.get_token());
         }
         tokens
@@ -50,7 +49,6 @@ impl MdLexer{
         self.start = self.current;
 
         let c = self.advance_char();
-        println!("CHAR: {c}");
         if c == '#' {
             return self.heading();
         }
@@ -72,14 +70,10 @@ impl MdLexer{
         // }
     }
     pub fn new_slide(&mut self) -> Option<MdToken> {
-        println!("ns {}{}{}{}", self.peek_cnow(), self.peek_offset(1, 0), self.peek_offset(2, 0), self.peek_offset(3, 0));
-        println!("rest {}", self.content.get(self.current..self.content.len()).unwrap());
         //if self.peek_cnow() == '<' {
             if self.peek_cnow() == ':' {
-                println!("ok1");
                 self.advance_char();
                 if self.peek_cnow() == ')' {
-                    println!("ok2");
                     self.advance_char();
                     if self.peek_cnow() == '>' {
                         self.advance_char();
@@ -96,8 +90,8 @@ impl MdLexer{
             level+=1;
             self.advance_char();
         }
-        while self.peek_char(1, 0) != '\n' {
-            println!("char {}", self.advance_char());
+        while self.peek_cnow() != '\n' {
+            self.advance_char();
         }
         println!("level: {level}");
         match level {
@@ -122,12 +116,12 @@ impl MdLexer{
         self.current+=1;
         *self.content.chars().collect::<Vec<_>>().get(self.current-1).unwrap_or(&'\0')
     }
-    pub fn peek_char(&self, offset: usize, counter_offset: usize) -> char {
-        if self.current+offset-counter_offset == 0{
+    /* pub fn peek_char(&self, offset: usize, counter_offset: usize) -> char {
+        if self.current+offset-counter_offset == 0 || self.current+offset-counter_offset >= self.content.chars().collect::<Vec<_>>().len(){
             return self.content.chars().collect::<Vec<_>>()[0];
         }
-        *self.content.chars().collect::<Vec<_>>().get(self.current-1+offset-counter_offset).unwrap_or(&'\0')
-    }
+        self.content.chars().collect::<Vec<_>>()[self.current+offset-counter_offset]
+    }*/
     pub fn peek_cnow(&self) -> char {
         if self.current >= self.content.chars().collect::<Vec<_>>().len(){
             '\0'
