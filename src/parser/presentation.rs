@@ -1,3 +1,5 @@
+
+#[derive(Debug, Clone)]
 pub struct Presentation {
     pub slides: Vec<Slide>,
 }
@@ -15,11 +17,21 @@ impl Presentation{
 
 #[derive(Debug, Clone)]
 pub struct Slide{
-    content: Vec<Hunk>,
+    pub content: Vec<Hunk>,
+}
+
+#[macro_export]
+macro_rules! new_slide {
+    () => {
+        Slide {
+            content: Vec::new(),
+        }
+    };
 }
 
 #[derive(Debug, Clone)]
 pub struct Hunk{
-    content: String,
-    color: crossterm::style::Color,
+    pub content: String,
+    pub bg_color: crossterm::style::Color,
+    pub fg_color: crossterm::style::Color,
 }
