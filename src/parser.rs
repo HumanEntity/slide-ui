@@ -59,7 +59,7 @@ impl MdLexer{
         }
         }
 
-        while self.peek_cnow() != '#' && self.peek_cnow() != '\n' && self.current < self.content.len() {
+        while self.peek_cnow() != '#' && self.peek_offset(0, 1) != '\n' && self.current < self.content.len() {
             self.advance_char();
         }
         self.make_token(MdTokenType::Text)
@@ -90,7 +90,7 @@ impl MdLexer{
             level+=1;
             self.advance_char();
         }
-        while self.peek_cnow() != '\n' {
+        while self.peek_offset(0, 1) != '\n' {
             self.advance_char();
         }
         println!("level: {level}");
