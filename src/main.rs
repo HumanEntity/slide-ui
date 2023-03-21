@@ -1,5 +1,5 @@
 use crate::{render::Renderer, parser::MdParser};
-use crossterm::{Result, terminal::ClearType};
+use crossterm::Result;
 
 pub mod render;
 pub mod event;

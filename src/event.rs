@@ -39,7 +39,6 @@ impl From<BaseEvent> for Event{
                 BaseEvent::PrevSlide => "PrevSlide",
                 BaseEvent::ScrollDown => "ScrollDown",
                 BaseEvent::ScrollUp => "ScrollUp",
-                _ => "",
             }.to_string()
         }
     }
