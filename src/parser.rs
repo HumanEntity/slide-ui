@@ -164,7 +164,7 @@ impl MdParser {
         let mut current = 0;
         for token in tokens {
             println!("{token:#?}");
-            let mut hunks = &mut slides[current].content;
+            let hunks = &mut slides[current].content;
             match token.ttype {
                 MdTokenType::H1 => hunks.push(Hunk {
                     content: token.content,

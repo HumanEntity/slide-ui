@@ -1,4 +1,4 @@
-use std::{fs::File, error::Error, io::{BufReader, prelude::*}};
+use std::{fs::File, io::{BufReader, prelude::*}};
 
 pub fn get_args() -> Vec<String> {
     std::env::args().collect()

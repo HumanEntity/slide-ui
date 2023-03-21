@@ -79,10 +79,8 @@ impl Renderer{
     fn draw(&self) -> Result<()> {
         self.clear()?;
 
-        let mut i = 0;
-        for hunk in &self.content.slides[self.pres_pos.slide as usize].content {
-            self.draw_hunk(hunk, self.pres_pos.scroll+i, 0)?;
-            i+=1;
+        for (i, hunk) in self.content.slides[self.pres_pos.slide as usize].content.iter().enumerate() {
+            self.draw_hunk(hunk, self.pres_pos.scroll+(i as u16), 0)?;
         }
 
         stdout().flush()?;
