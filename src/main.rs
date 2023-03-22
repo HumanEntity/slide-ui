@@ -1,10 +1,10 @@
-use crate::{render::Renderer, parser::MdParser};
+use crate::{parser::MdParser, render::Renderer};
 use crossterm::Result;
 
-pub mod render;
+pub mod cli;
 pub mod event;
 pub mod parser;
-pub mod cli;
+pub mod render;
 
 fn main() -> Result<()> {
     let args = cli::get_args();

@@ -7,10 +7,13 @@ pub type EventQueue = VecDeque<Event>;
 #[derive(Debug, Clone)]
 pub struct EventSystem;
 
-impl EventSystem{
+impl EventSystem {
     pub fn push(event: Event) {
-        unsafe { EVENTS.push_back(event); }
+        unsafe {
+            EVENTS.push_back(event);
+        }
     }
+    #[must_use]
     pub fn pop() -> Option<Event> {
         unsafe { EVENTS.pop_front() }
     }
@@ -22,7 +25,7 @@ pub struct Event {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum BaseEvent{
+pub enum BaseEvent {
     Closed,
     NextSlide,
     PrevSlide,
@@ -30,7 +33,7 @@ pub enum BaseEvent{
     ScrollUp,
 }
 
-impl From<BaseEvent> for Event{
+impl From<BaseEvent> for Event {
     fn from(value: BaseEvent) -> Self {
         Self {
             content: match value {
@@ -39,7 +42,8 @@ impl From<BaseEvent> for Event{
                 BaseEvent::PrevSlide => "PrevSlide",
                 BaseEvent::ScrollDown => "ScrollDown",
                 BaseEvent::ScrollUp => "ScrollUp",
-            }.to_string()
+            }
+            .to_string(),
         }
     }
 }

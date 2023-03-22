@@ -2,11 +2,13 @@ use crossterm::style::Color;
 
 use crate::new_slide;
 
-use self::{token::{MdToken, MdTokenType}, presentation::*};
+use self::{
+    presentation::{Hunk, Presentation, Slide},
+    token::{MdToken, MdTokenType},
+};
 
-
-pub mod token;
 pub mod presentation;
+pub mod token;
 
 #[derive(Debug, Clone)]
 pub struct MdLexer {
@@ -16,9 +18,10 @@ pub struct MdLexer {
     line: usize,
 }
 
-impl MdLexer{
+impl MdLexer {
     #[inline]
-    pub fn new(content: String) -> Self {
+    #[must_use]
+    pub const fn new(content: String) -> Self {
         Self {
             content,
             start: 0,
@@ -36,7 +39,7 @@ impl MdLexer{
      *      H5
      *      H6
      *      Text
-    */
+     */
     pub fn tokenize(&mut self) -> Vec<MdToken> {
         let mut tokens: Vec<MdToken> = Vec::new();
         while self.current < self.content.len() - 1 {
@@ -54,16 +57,18 @@ impl MdLexer{
         }
 
         if c == '<' {
-        if let Some(token) = self.new_slide() {
-            return token;
-        }
+            if let Some(token) = self.new_slide() {
+                return token;
+            }
         }
 
-        while self.peek_cnow() != '#' && self.peek_offset(0, 1) != '\n' && self.current < self.content.len() {
+        while self.peek_cnow() != '#'
+            && self.peek_offset(0, 1) != '\n'
+            && self.current < self.content.len()
+        {
             self.advance_char();
         }
         self.make_token(MdTokenType::Text)
-
 
         // if self.current >= self.content.len() {
         //     return self.make_token(MdTokenType::Text);
@@ -71,23 +76,23 @@ impl MdLexer{
     }
     pub fn new_slide(&mut self) -> Option<MdToken> {
         //if self.peek_cnow() == '<' {
-            if self.peek_cnow() == ':' {
+        if self.peek_cnow() == ':' {
+            self.advance_char();
+            if self.peek_cnow() == ')' {
                 self.advance_char();
-                if self.peek_cnow() == ')' {
+                if self.peek_cnow() == '>' {
                     self.advance_char();
-                    if self.peek_cnow() == '>' {
-                        self.advance_char();
-                        return Some(self.make_token(MdTokenType::NewSlide));
-                    }
+                    return Some(self.make_token(MdTokenType::NewSlide));
                 }
             }
+        }
         //}
         None
     }
     pub fn heading(&mut self) -> MdToken {
         let mut level: u8 = 1;
         while self.peek_cnow() == '#' {
-            level+=1;
+            level += 1;
             self.advance_char();
         }
         while self.peek_offset(0, 1) != '\n' {
@@ -101,7 +106,10 @@ impl MdLexer{
             4 => self.make_token(MdTokenType::H4),
             5 => self.make_token(MdTokenType::H5),
             6 => self.make_token(MdTokenType::H6),
-            _ => {eprintln!("Not valid heading in markdown (as I know it)"); unreachable!()} 
+            _ => {
+                eprintln!("Not valid heading in markdown (as I know it)");
+                unreachable!()
+            }
         }
     }
     fn make_token(&self, ttype: MdTokenType) -> MdToken {
@@ -112,9 +120,14 @@ impl MdLexer{
 
         MdToken::new(ttype, str)
     }
-    pub fn advance_char(&mut self) -> char{
-        self.current+=1;
-        *self.content.chars().collect::<Vec<_>>().get(self.current-1).unwrap_or(&'\0')
+    pub fn advance_char(&mut self) -> char {
+        self.current += 1;
+        *self
+            .content
+            .chars()
+            .collect::<Vec<_>>()
+            .get(self.current - 1)
+            .unwrap_or(&'\0')
     }
     /* pub fn peek_char(&self, offset: usize, counter_offset: usize) -> char {
         if self.current+offset-counter_offset == 0 || self.current+offset-counter_offset >= self.content.chars().collect::<Vec<_>>().len(){
@@ -122,21 +135,25 @@ impl MdLexer{
         }
         self.content.chars().collect::<Vec<_>>()[self.current+offset-counter_offset]
     }*/
+    #[must_use]
     pub fn peek_cnow(&self) -> char {
-        if self.current >= self.content.chars().collect::<Vec<_>>().len(){
+        if self.current >= self.content.chars().count() {
             '\0'
         } else {
             self.content.chars().collect::<Vec<_>>()[self.current]
         }
     }
-    pub fn peek_offset(&self, offset: usize, counter_offset: usize) -> char{
-        self.content.chars().collect::<Vec<_>>()[self.current+offset-counter_offset]
+    #[must_use]
+    pub fn peek_offset(&self, offset: usize, counter_offset: usize) -> char {
+        self.content.chars().collect::<Vec<_>>()[self.current + offset - counter_offset]
     }
     pub fn skip_whitespace(&mut self) {
         loop {
             // println!("sw {:?}", self.peek_cnow());
             match self.peek_cnow() {
-                ' ' | '\r'  => {self.advance_char();},
+                ' ' | '\r' => {
+                    self.advance_char();
+                }
                 '\n' => {
                     self.line += 1;
                     self.advance_char();
@@ -147,20 +164,20 @@ impl MdLexer{
     }
 }
 
-pub struct MdParser{
+pub struct MdParser {
     content: String,
 }
 
 impl MdParser {
-    pub fn new(content: String) -> Self {
-        Self {
-            content
-        }
+    #[must_use]
+    pub const fn new(content: String) -> Self {
+        Self { content }
     }
 
     pub fn parse(&mut self) -> Presentation {
         let tokens = MdLexer::new(self.content.clone()).tokenize();
-        let mut slides: Vec<Slide> = Vec::new(); slides.push(new_slide!());
+        let mut slides: Vec<Slide> = Vec::new();
+        slides.push(new_slide!());
         let mut current = 0;
         for token in tokens {
             println!("{token:#?}");
@@ -202,7 +219,7 @@ impl MdParser {
                     fg_color: Color::White,
                 }),
                 MdTokenType::NewSlide => {
-                    current+=1;
+                    current += 1;
                     slides.push(new_slide!());
                 }
             }
