@@ -1,9 +1,14 @@
-use std::{fs::File, io::{BufReader, prelude::*}};
+use std::{
+    fs::File,
+    io::{prelude::*, BufReader},
+};
 
+#[must_use]
 pub fn get_args() -> Vec<String> {
     std::env::args().collect()
 }
 
+#[must_use]
 pub fn separate(args: Vec<String>) -> (Vec<String>, Vec<String>) {
     let mut atribs = Vec::new();
     let mut params = Vec::new();
@@ -27,10 +32,10 @@ pub fn manage_atributes(atribs: Vec<String>) {
     }
 }
 
-pub fn read_file(path: &str) -> Result<String, std::io::Error>{
+pub fn read_file(path: &str) -> Result<String, std::io::Error> {
     let file = File::open(path)?;
     let mut buf_reader = BufReader::new(file);
-    let mut content  = String::new();
+    let mut content = String::new();
     buf_reader.read_to_string(&mut content)?;
     Ok(content)
 }
