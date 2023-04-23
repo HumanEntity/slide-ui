@@ -2,8 +2,18 @@
 name = "slide-ui"
 version = "0.2.0"
 edition = "2021"
+build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 crossterm = "0.26.1"
+eyre = "0.6.8"
+toml = {optional = true, version = "^0.7"}
+
+[build-dependencies]
+eyre = "0.6.8"
+
+[features]
+default = ["config"]
+config = ["dep:toml"]
