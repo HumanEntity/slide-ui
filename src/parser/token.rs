@@ -1,6 +1,6 @@
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum MdTokenType {
+pub enum TokenType {
     H1,
     H2,
     H3,
@@ -8,19 +8,17 @@ pub enum MdTokenType {
     H5,
     H6,
     Text,
-
-    NewSlide,
 }
 
 #[derive(Debug, Clone)]
-pub struct MdToken {
-    pub ttype: MdTokenType,
+pub struct Token {
+    pub ttype: TokenType,
     pub content: String,
 }
 
-impl MdToken {
+impl Token {
     #[must_use]
-    pub const fn new(ttype: MdTokenType, content: String) -> Self {
+    pub const fn new(ttype: TokenType, content: String) -> Self {
         Self { ttype, content }
     }
 }
