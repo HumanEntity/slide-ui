@@ -57,7 +57,15 @@ impl Lexer {
 
         let c = self.advance_char();
         if c == '#' {
-            return self.heading();
+            let i = self.current;
+            while self.peek_cnow() == '#' {
+                self.advance_char();
+            }
+            if self.peek_cnow() == ' '{
+                self.current = i;
+                return self.heading();
+            }
+            self.current = i;
         }
 
         while self.peek_cnow() != '#'
@@ -110,7 +118,7 @@ impl Lexer {
             TokenType::H6 => start=5,
             _ => {start=0; is_heading=0; is_text=2;},
         }
-        for _ in 0..self.heading_level-1-is_heading+start+is_text{
+        for _ in 0..self.heading_level+start+is_text-1-is_heading{
            str.push(' ');
         }
         for i in self.start+(start as usize)..self.current {
