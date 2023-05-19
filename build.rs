@@ -1,19 +1,18 @@
-#![feature(fs_try_exists)]
-
-use std::path::PathBuf;
 use eyre::Result;
+use std::path::PathBuf;
 
-fn main() -> Result<()>{
+fn main() -> Result<()> {
     #[cfg(feature = "config")]
     {
         let home = std::env!("HOME");
         let config_dir = ".config/sui";
-        if !std::fs::try_exists({
+        let res = {
             let mut path = PathBuf::new();
             path.push(home);
             path.push(config_dir);
-            path
-        })? {
+            path.exists()
+        };
+        if res {
             let user_relative_path = ".config/sui/config.toml";
 
             let mut config_path = PathBuf::new();
@@ -32,6 +31,6 @@ fn main() -> Result<()>{
 fn save_config(config_path: &std::ffi::OsStr, config_content: &str) -> Result<()> {
     let parent = std::path::Path::new(&config_path).parent().unwrap();
     std::fs::create_dir_all(parent)?;
-    std::fs::write(&config_path, config_content)?;
+    std::fs::write(config_path, config_content)?;
     Ok(())
 }
