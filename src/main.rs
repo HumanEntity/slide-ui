@@ -2,12 +2,7 @@ use crate::{parser::Parser, render::Renderer};
 use config::get_config;
 use eyre::Result;
 
-pub mod cli;
-pub mod config;
-pub mod event;
-pub mod lexer;
-pub mod parser;
-pub mod render;
+use slide_ui::*;
 
 fn main() -> Result<()> {
     let args = cli::get_args();
