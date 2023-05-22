@@ -3,7 +3,8 @@ use slide_ui::{parser::Parser, render::Renderer};
 use eyre::Result;
 
 fn main() -> Result<()> {
-    let mut parser = Parser::new("# test\n".to_string());
+    let content = include_str!("test.md").to_string();
+    let mut parser = Parser::new(content);
     let presentation = parser.parse();
     println!("{:?}", presentation);
 
