@@ -1,5 +1,5 @@
 use crate::{parser::Parser, render::Renderer};
-use config::get_config;
+use config::ConfigReader;
 use eyre::Result;
 
 use slide_ui::*;
@@ -7,7 +7,7 @@ use slide_ui::*;
 fn main() -> Result<()> {
     let args = cli::get_args();
 
-    println!("{:?}", get_config()?);
+    println!("{:?}", ConfigReader::get_config()?);
 
     cli::manage_atributes(cli::separate(args.clone()).0);
 
