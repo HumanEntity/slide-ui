@@ -8,7 +8,7 @@ use crossterm::{queue, Result};
 use std::io::{stdout, Write};
 use std::time::Duration;
 
-use crate::event::{BaseEvent, EventSystem};
+use crate::event::{Event as Event2, EventSystem};
 use crate::parser::presentation::{Hunk, Presentation};
 
 #[derive(Debug, Clone)]
@@ -50,14 +50,14 @@ impl Renderer {
         }
 
         if let Some(event) = EventSystem::pop() {
-            match event.content.as_str() {
-                "Closed" => self.closed = true,
-                "PrevSlide" => {
+            match event {
+                Event2::Closed => self.closed = true,
+                Event2::PrevSlide => {
                     if self.pres_pos.slide != 0 {
                         self.pres_pos.slide -= 1;
                     }
                 }
-                "NextSlide" => {
+                Event2::NextSlide => {
                     if (self.pres_pos.slide as usize) < self.content.slides.len() - 1 {
                         self.pres_pos.slide += 1;
                     }
@@ -72,11 +72,11 @@ impl Renderer {
     }
     fn check_key(event: KeyEvent) {
         match event.code {
-            KeyCode::Esc | KeyCode::Char('q') => EventSystem::push(BaseEvent::Closed.into()),
-            KeyCode::Up => EventSystem::push(BaseEvent::ScrollUp.into()),
-            KeyCode::Down => EventSystem::push(BaseEvent::ScrollDown.into()),
-            KeyCode::Left => EventSystem::push(BaseEvent::PrevSlide.into()),
-            KeyCode::Right => EventSystem::push(BaseEvent::NextSlide.into()),
+            KeyCode::Esc | KeyCode::Char('q') => EventSystem::push(Event2::Closed),
+            KeyCode::Up => EventSystem::push(Event2::ScrollUp),
+            KeyCode::Down => EventSystem::push(Event2::ScrollDown),
+            KeyCode::Left => EventSystem::push(Event2::PrevSlide),
+            KeyCode::Right => EventSystem::push(Event2::NextSlide),
             _ => {}
         }
     }

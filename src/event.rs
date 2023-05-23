@@ -19,13 +19,8 @@ impl EventSystem {
     }
 }
 
-#[derive(Debug)]
-pub struct Event {
-    pub content: String,
-}
-
 #[derive(Debug, Clone, Copy)]
-pub enum BaseEvent {
+pub enum Event {
     Closed,
     NextSlide,
     PrevSlide,
@@ -33,17 +28,17 @@ pub enum BaseEvent {
     ScrollUp,
 }
 
-impl From<BaseEvent> for Event {
-    fn from(value: BaseEvent) -> Self {
-        Self {
-            content: match value {
-                BaseEvent::Closed => "Closed",
-                BaseEvent::NextSlide => "NextSlide",
-                BaseEvent::PrevSlide => "PrevSlide",
-                BaseEvent::ScrollDown => "ScrollDown",
-                BaseEvent::ScrollUp => "ScrollUp",
-            }
-            .to_string(),
-        }
-    }
-}
+// impl From<BaseEvent> for Event {
+//     fn from(value: BaseEvent) -> Self {
+//         Self {
+//             content: match value {
+//                 BaseEvent::Closed => "Closed",
+//                 BaseEvent::NextSlide => "NextSlide",
+//                 BaseEvent::PrevSlide => "PrevSlide",
+//                 BaseEvent::ScrollDown => "ScrollDown",
+//                 BaseEvent::ScrollUp => "ScrollUp",
+//             }
+//             .to_string(),
+//         }
+//     }
+// }
