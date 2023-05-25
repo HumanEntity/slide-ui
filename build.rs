@@ -12,7 +12,7 @@ fn main() -> Result<()> {
             path.push(config_dir);
             path.exists()
         };
-        if res {
+        if !res {
             let user_relative_path = ".config/sui/config.toml";
 
             let mut config_path = PathBuf::new();
