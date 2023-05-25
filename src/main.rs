@@ -7,7 +7,8 @@ use slide_ui::*;
 fn main() -> Result<()> {
     let args = cli::get_args();
 
-    println!("{:?}", ConfigReader::get_config()?);
+    let config = ConfigReader::get_config()?;
+    println!("{config:?}");
 
     cli::manage_atributes(cli::separate(args.clone()).0);
 
@@ -18,7 +19,7 @@ fn main() -> Result<()> {
 
     let content = cli::read_file(cli::separate(args).1[1].as_str())?;
 
-    let mut parser = Parser::new(content);
+    let mut parser = Parser::new(content, config);
     let presentation = parser.parse();
 
     println!("{presentation:?}");
