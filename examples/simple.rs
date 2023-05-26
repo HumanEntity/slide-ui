@@ -8,7 +8,7 @@ fn main() -> Result<()> {
     let presentation = parser.parse();
     println!("{:?}", presentation);
 
-    let mut renderer = Renderer::new(presentation)?;
+    let mut renderer = Renderer::new(presentation, toml::Table::new())?;
 
     while renderer.is_running() {
         renderer.process()?;
