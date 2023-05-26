@@ -72,7 +72,7 @@ impl Parser {
         }
     }
 
-    fn match_color(&self, str: &str) -> Color {
+    pub fn match_color(str: &str) -> Color {
         match str {
             "red" => Color::Red,
             "darkred" => Color::DarkRed,
@@ -99,23 +99,22 @@ impl Parser {
 
     fn get_colors(&self, label: &str) -> (Color, Color) {
         macro_rules! get {
-            ($map:expr, $value:ident, $key:ident, $code:block) => {
+            ($map:expr, $value:ident, $key:expr, $code:block) => {
                 if let Some(toml::Value::Table($value)) = $map.get($key) {
                     $code
                 }
             };
         }
-        let lab = "theme";
-        get!(self.config, theme, lab, {
+        get!(self.config, theme, "theme", {
             println!("{:#?}", theme);
             get!(theme, colors, label, {
                 let bg_color = if let Some(bg_color) = colors.get("bg") {
-                    self.match_color(bg_color.as_str().unwrap())
+                    Self::match_color(bg_color.as_str().unwrap())
                 } else {
                     Color::Black
                 };
                 let fg_color = if let Some(fg_color) = colors.get("fg") {
-                    self.match_color(fg_color.as_str().unwrap())
+                    Self::match_color(fg_color.as_str().unwrap())
                 } else {
                     Color::White
                 };

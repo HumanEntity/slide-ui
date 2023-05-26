@@ -19,12 +19,12 @@ fn main() -> Result<()> {
 
     let content = cli::read_file(cli::separate(args).1[1].as_str())?;
 
-    let mut parser = Parser::new(content, config);
+    let mut parser = Parser::new(content, config.clone());
     let presentation = parser.parse();
 
     println!("{presentation:?}");
 
-    let mut renderer = Renderer::new(presentation)?;
+    let mut renderer = Renderer::new(presentation, config)?;
 
     while renderer.is_running() {
         renderer.process()?;

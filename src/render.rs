@@ -1,7 +1,7 @@
 use crossterm::cursor::{Hide, Show};
 use crossterm::event::{poll, read, Event, KeyCode, KeyEvent};
 use crossterm::execute;
-use crossterm::style::{Print, SetBackgroundColor, SetForegroundColor};
+use crossterm::style::{Color, Print, SetBackgroundColor, SetForegroundColor};
 use crossterm::terminal::{size, Clear, ClearType};
 use crossterm::{queue, Result};
 
@@ -10,6 +10,7 @@ use std::time::Duration;
 
 use crate::event::{Event as Event2, EventSystem};
 use crate::parser::presentation::{Hunk, Presentation};
+use crate::parser::Parser;
 
 #[derive(Debug, Clone)]
 pub struct Renderer {
@@ -17,12 +18,13 @@ pub struct Renderer {
     pub size: (u16, u16),
     pub closed: bool,
     pres_pos: PresentationPosition,
+    config: toml::Table,
 }
 
 impl Renderer {
     // Constructor
     #[inline]
-    pub fn new(content: Presentation) -> Result<Self> {
+    pub fn new(content: Presentation, config: toml::Table) -> Result<Self> {
         let x = Self {
             content,
             size: size()?,
@@ -31,6 +33,7 @@ impl Renderer {
                 slide: 0,
                 scroll: 0,
             },
+            config,
         };
         x.enable_raw_mode()?;
         Ok(x)
@@ -83,14 +86,23 @@ impl Renderer {
     // Rendering
     fn draw(&self) -> Result<()> {
         Self::clear()?;
+        //
+        // for (i, hunk) in self.content.slides[self.pres_pos.slide as usize]
+        //     .content
+        //     .iter()
+        //     .enumerate()
+        // {
+        //     Self::draw_hunk(hunk, self.pres_pos.scroll + (i as u16), 0)?;
+        // }
 
-        for (i, hunk) in self.content.slides[self.pres_pos.slide as usize]
+        self.content.slides[self.pres_pos.slide as usize]
             .content
             .iter()
             .enumerate()
-        {
-            Self::draw_hunk(hunk, self.pres_pos.scroll + (i as u16), 0)?;
-        }
+            .map(|(i, hunk)| Self::draw_hunk(hunk, self.pres_pos.scroll + (i as u16), 0))
+            .for_each(drop);
+
+        self.draw_slide_indicator()?;
 
         stdout().flush()?;
         Ok(())
@@ -105,6 +117,62 @@ impl Renderer {
             SetForegroundColor(hunk.fg_color),
             SetBackgroundColor(hunk.bg_color),
             Print(hunk.content.clone())
+        )?;
+        Ok(())
+    }
+    fn draw_slide_indicator(&self) -> Result<()> {
+        macro_rules! get {
+            ($map:expr, $value:ident, $key:expr, $code:block, $else:block) => {
+                if let Some(toml::Value::Table($value)) = $map.get($key) {
+                    $code
+                } else {
+                    $else
+                }
+            };
+        }
+        let slide_indicator = format!("{}/{}", self.content.slides.len(), self.pres_pos.slide + 1);
+        let column = self.size.0 - 5 - (slide_indicator.len() as u16);
+        let row = self.size.1 - 5;
+        let (bg_color, fg_color) = get!(
+            self.config,
+            display,
+            "display",
+            {
+                get!(
+                    display,
+                    slide_indicator,
+                    "slide_indicator",
+                    {
+                        let bg = Parser::match_color(
+                            slide_indicator
+                                .get("bg")
+                                .unwrap_or(&toml::Value::String(String::from("black")))
+                                .clone()
+                                .as_str()
+                                .unwrap_or("black"),
+                        );
+
+                        let fg = Parser::match_color(
+                            slide_indicator
+                                .get("fg")
+                                .unwrap_or(&toml::Value::String(String::from("white")))
+                                .clone()
+                                .as_str()
+                                .unwrap_or(""),
+                        );
+                        (bg, fg)
+                    },
+                    { (Color::Black, Color::White) }
+                )
+            },
+            { (Color::Black, Color::White) }
+        );
+        queue!(
+            stdout(),
+            crossterm::cursor::MoveTo(column, row),
+            SetForegroundColor(fg_color),
+            SetBackgroundColor(bg_color),
+            Print(slide_indicator),
         )?;
         Ok(())
     }
