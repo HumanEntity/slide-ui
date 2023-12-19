@@ -1,7 +1,9 @@
 use crate::parser::token::{Token, TokenType};
 
-#[derive(Debug, Clone)]
-pub struct Lexer {
+use super::Lexer;
+
+#[derive(Debug, Default, Clone)]
+pub struct MdLexer {
     content: String,
     start: usize,
     current: usize,
@@ -10,17 +12,31 @@ pub struct Lexer {
     heading_level: u8,
 }
 
-impl Lexer {
+impl Lexer for MdLexer {
+    fn tokenize(&mut self) -> Vec<Token> {
+        let mut tokens: Vec<Token> = Vec::new();
+        while self.current < self.content.len() - 1 {
+            tokens.push(self.get_token());
+        }
+        tokens
+    }
+
+    fn set_src(&mut self, src: &str) {
+	self.content = src.into();
+    }
+}
+
+impl MdLexer {
     #[inline]
     #[must_use]
-    pub const fn new(content: String) -> Self {
-        Self {
-            content,
-            start: 0,
-            current: 0,
-            line: 0,
-            heading_level: 0,
-        }
+    pub const fn new() -> Self {
+	Self {
+	    content: String::new(),
+	    start: 0,
+	    current: 0,
+	    line: 0,
+	    heading_level: 0,
+	}
     }
     //  Tokens
     /*
@@ -34,13 +50,6 @@ impl Lexer {
      *      Text
      *      Link
      */
-    pub fn tokenize(&mut self) -> Vec<Token> {
-        let mut tokens: Vec<Token> = Vec::new();
-        while self.current < self.content.len() - 1 {
-            tokens.push(self.get_token());
-        }
-        tokens
-    }
     pub fn get_token(&mut self) -> Token {
         self.skip_whitespace();
         self.start = self.current;
