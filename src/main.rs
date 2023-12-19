@@ -2,7 +2,7 @@ use crate::{parser::Parser, render::Renderer};
 use config::ConfigReader;
 use eyre::Result;
 
-use slide_ui::*;
+use slide_ui::{*, lexer::MdLexer};
 
 fn main() -> Result<()> {
     let args = cli::get_args();
@@ -18,9 +18,11 @@ fn main() -> Result<()> {
     }
 
     let content = cli::read_file(cli::separate(args).1[1].as_str())?;
+    
+    let mut lexer = MdLexer::new();
 
     let mut parser = Parser::new(content, config.clone());
-    let presentation = parser.parse();
+    let presentation = parser.parse(&mut lexer);
 
     println!("{presentation:?}");
 
@@ -29,7 +31,5 @@ fn main() -> Result<()> {
     while renderer.is_running() {
         renderer.process()?;
     }
-
-    renderer.disable_raw_mode()?;
     Ok(())
 }
