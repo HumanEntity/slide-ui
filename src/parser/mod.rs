@@ -1,7 +1,7 @@
+use crate::lexer::Lexer;
 use crossterm::style::Color;
 
 use crate::{
-    lexer::Lexer,
     new_slide,
     parser::{
         presentation::{Hunk, Presentation, Slide},
@@ -38,8 +38,9 @@ impl Parser {
         Self { content, config }
     }
 
-    pub fn parse(&mut self) -> Presentation {
-        let tokens = Lexer::new(self.content.clone()).tokenize();
+    pub fn parse(&mut self, lexer: &mut impl Lexer) -> Presentation {
+	lexer.set_src(self.content.as_str());
+        let tokens = lexer.tokenize();
         println!("{tokens:#?}");
         let mut slides: Vec<Slide> = Vec::new();
         slides.push(new_slide!());
