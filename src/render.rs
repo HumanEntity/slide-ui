@@ -101,7 +101,12 @@ impl Renderer {
             .iter()
             .enumerate()
             .map(|(i, hunk)| Self::draw_hunk(hunk, self.pres_pos.scroll + (i as u16), 0))
-            .for_each(drop);
+            .for_each(|r| {
+		match r {
+		    Ok(_) => {},
+		    Err(e) => panic!("Encountered error: {e:?}"),
+		}
+	    });
 
         self.draw_slide_indicator()?;
 
