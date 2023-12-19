@@ -77,10 +77,10 @@ impl Renderer {
     fn check_key(event: KeyEvent) {
         match event.code {
             KeyCode::Esc | KeyCode::Char('q') => EventSystem::push(Event2::Closed),
-            KeyCode::Up => EventSystem::push(Event2::ScrollUp),
-            KeyCode::Down => EventSystem::push(Event2::ScrollDown),
-            KeyCode::Left => EventSystem::push(Event2::PrevSlide),
-            KeyCode::Right => EventSystem::push(Event2::NextSlide),
+            KeyCode::Up  | KeyCode::Char('k') => EventSystem::push(Event2::ScrollUp),
+            KeyCode::Down | KeyCode::Char('j') => EventSystem::push(Event2::ScrollDown),
+            KeyCode::Left | KeyCode::Char('h') => EventSystem::push(Event2::PrevSlide),
+            KeyCode::Right | KeyCode::Char('l') => EventSystem::push(Event2::NextSlide),
             _ => {}
         }
     }
