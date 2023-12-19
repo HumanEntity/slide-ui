@@ -40,6 +40,7 @@ impl Parser {
 
     pub fn parse(&mut self) -> Presentation {
         let tokens = Lexer::new(self.content.clone()).tokenize();
+        println!("{tokens:#?}");
         let mut slides: Vec<Slide> = Vec::new();
         slides.push(new_slide!());
         let mut current = 0;
@@ -62,13 +63,14 @@ impl Parser {
 
     fn hunk(&self, token: Token) -> Hunk {
         match token.ttype {
+            TokenType::Text => self.text(token.content).unwrap(),
             TokenType::H1 => self.h1(token.content).unwrap(),
             TokenType::H2 => self.h2(token.content).unwrap(),
             TokenType::H3 => self.h3(token.content).unwrap(),
             TokenType::H4 => self.h4(token.content).unwrap(),
             TokenType::H5 => self.h5(token.content).unwrap(),
             TokenType::H6 => self.h6(token.content).unwrap(),
-            TokenType::Text => self.text(token.content).unwrap(),
+            TokenType::Link => self.link(token.content).unwrap(),
         }
     }
 
@@ -131,4 +133,5 @@ impl Parser {
     hunk_function!(h5, "h5");
     hunk_function!(h6, "h6");
     hunk_function!(text, "text");
+    hunk_function!(link, "link");
 }

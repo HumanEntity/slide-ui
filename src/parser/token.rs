@@ -1,13 +1,15 @@
-#[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+// #[repr(u8)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TokenType {
+    #[default]
+    Text,
     H1,
     H2,
     H3,
     H4,
     H5,
     H6,
-    Text,
+    Link,
 }
 
 #[derive(Debug, Clone)]
