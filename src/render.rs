@@ -44,10 +44,11 @@ impl Renderer {
         !self.closed
     }
     pub fn process(&mut self) -> Result<()> {
+        self.size = crossterm::terminal::size()?;
         if poll(Duration::from_millis(100))? {
             match read()? {
                 Event::Key(event) => Self::check_key(event),
-                Event::Resize(x, y) => self.size = (x, y),
+                // Event::Resize(x, y) => self.size = (x, y),
                 _ => {}
             }
         }
@@ -130,7 +131,7 @@ impl Renderer {
                 }
             };
         }
-        let slide_indicator = format!("{}/{}", self.content.slides.len(), self.pres_pos.slide + 1);
+        let slide_indicator = format!("{}/{}", self.pres_pos.slide + 1, self.content.slides.len());
         let column = self.size.0 - 5 - (slide_indicator.len() as u16);
         let row = self.size.1 - 5;
         let (bg_color, fg_color) = get!(
