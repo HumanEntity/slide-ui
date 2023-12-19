@@ -193,6 +193,15 @@ impl Renderer {
     }
 }
 
+impl Drop for Renderer {
+    fn drop(&mut self) {
+	match self.disable_raw_mode() {
+	    Ok(_) => {},
+	    Err(e) => eprintln!("{e:?}"),
+	}
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct PresentationPosition {
     pub slide: u16,
