@@ -32,6 +32,7 @@ impl Lexer {
      *      H5
      *      H6
      *      Text
+     *      Link
      */
     pub fn tokenize(&mut self) -> Vec<Token> {
         let mut tokens: Vec<Token> = Vec::new();
@@ -55,9 +56,12 @@ impl Lexer {
                 return self.heading();
             }
             self.current = i;
+        } else if c == '[' {
+            return self.link();
         }
 
         while self.peek_cnow() != '#'
+	    && self.peek_cnow() != '['
             && self.peek_offset(0, 1) != '\n'
             && self.current < self.content.len()
         {
@@ -92,6 +96,19 @@ impl Lexer {
                 unreachable!()
             }
         }
+    }
+    pub fn link(&mut self) -> Token {
+        while self.peek_cnow() != ']' {
+            self.advance_char();
+        }
+        self.advance_char();
+	if self.peek_cnow() == '(' {
+	    while self.peek_cnow() != ')' {
+		self.advance_char();
+	    }
+	    self.advance_char();
+	}
+        self.make_token(TokenType::Link)
     }
     fn make_token(&self, ttype: TokenType) -> Token {
         let mut str = String::new();
