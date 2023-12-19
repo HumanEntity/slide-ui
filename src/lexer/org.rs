@@ -91,22 +91,21 @@ impl OrgLexer {
             5 => self.make_token(TokenType::H5),
             6 => self.make_token(TokenType::H6),
             _ => {
-                eprintln!("Not valid heading in markdown (as I know it)");
+                eprintln!("Not valid heading in org (as I know it)");
                 unreachable!()
             }
         }
     }
     pub fn link(&mut self) -> Token {
-        while self.peek_cnow() != ']' {
+	let mut nesting = 1;
+        while nesting > 0 {
+	    if self.peek_cnow() == ']' {
+		nesting -= 1
+	    } else if self.peek_cnow() == '[' {
+		nesting += 1;
+	    }
             self.advance_char();
         }
-        self.advance_char();
-	if self.peek_cnow() == '[' {
-	    while self.peek_cnow() != ']' {
-		self.advance_char();
-	    }
-	    self.advance_char();
-	}
         self.make_token(TokenType::Link)
     }
     fn make_token(&self, ttype: TokenType) -> Token {
