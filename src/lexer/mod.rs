@@ -12,19 +12,18 @@ pub trait Lexer {
 
 impl dyn Lexer {
     fn tokn(&mut self) -> Vec<Token> {
-	self.tokenize()
+        self.tokenize()
     }
-    fn set_source(&mut self, src: &str){
-	self.set_src(src)
+    fn set_source(&mut self, src: &str) {
+        self.set_src(src)
     }
 }
 
-impl Lexer for Box<dyn Lexer>{
+impl Lexer for Box<dyn Lexer> {
     fn tokenize(&mut self) -> Vec<Token> {
-	self.tokn()
+        self.tokn()
     }
     fn set_src(&mut self, src: &str) {
-	self.set_source(src)
+        self.set_source(src)
     }
 }
-

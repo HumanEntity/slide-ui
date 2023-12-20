@@ -22,7 +22,7 @@ impl Lexer for MdLexer {
     }
 
     fn set_src(&mut self, src: &str) {
-	self.content = src.into();
+        self.content = src.into();
     }
 }
 
@@ -30,13 +30,13 @@ impl MdLexer {
     #[inline]
     #[must_use]
     pub const fn new() -> Self {
-	Self {
-	    content: String::new(),
-	    start: 0,
-	    current: 0,
-	    line: 0,
-	    heading_level: 0,
-	}
+        Self {
+            content: String::new(),
+            start: 0,
+            current: 0,
+            line: 0,
+            heading_level: 0,
+        }
     }
     //  Tokens
     /*
@@ -70,7 +70,7 @@ impl MdLexer {
         }
 
         while self.peek_cnow() != '#'
-	    && self.peek_cnow() != '['
+            && self.peek_cnow() != '['
             && self.peek_offset(0, 1) != '\n'
             && self.current < self.content.len()
         {
@@ -111,12 +111,12 @@ impl MdLexer {
             self.advance_char();
         }
         self.advance_char();
-	if self.peek_cnow() == '(' {
-	    while self.peek_cnow() != ')' {
-		self.advance_char();
-	    }
-	    self.advance_char();
-	}
+        if self.peek_cnow() == '(' {
+            while self.peek_cnow() != ')' {
+                self.advance_char();
+            }
+            self.advance_char();
+        }
         self.make_token(TokenType::Link)
     }
     fn make_token(&self, ttype: TokenType) -> Token {

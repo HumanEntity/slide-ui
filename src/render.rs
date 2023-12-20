@@ -77,7 +77,7 @@ impl Renderer {
     fn check_key(event: KeyEvent) {
         match event.code {
             KeyCode::Esc | KeyCode::Char('q') => EventSystem::push(Event2::Closed),
-            KeyCode::Up  | KeyCode::Char('k') => EventSystem::push(Event2::ScrollUp),
+            KeyCode::Up | KeyCode::Char('k') => EventSystem::push(Event2::ScrollUp),
             KeyCode::Down | KeyCode::Char('j') => EventSystem::push(Event2::ScrollDown),
             KeyCode::Left | KeyCode::Char('h') => EventSystem::push(Event2::PrevSlide),
             KeyCode::Right | KeyCode::Char('l') => EventSystem::push(Event2::NextSlide),
@@ -101,12 +101,10 @@ impl Renderer {
             .iter()
             .enumerate()
             .map(|(i, hunk)| Self::draw_hunk(hunk, self.pres_pos.scroll + (i as u16), 0))
-            .for_each(|r| {
-		match r {
-		    Ok(_) => {},
-		    Err(e) => panic!("Encountered error: {e:?}"),
-		}
-	    });
+            .for_each(|r| match r {
+                Ok(_) => {}
+                Err(e) => panic!("Encountered error: {e:?}"),
+            });
 
         self.draw_slide_indicator()?;
 
@@ -195,10 +193,10 @@ impl Renderer {
 
 impl Drop for Renderer {
     fn drop(&mut self) {
-	match self.disable_raw_mode() {
-	    Ok(_) => {},
-	    Err(e) => eprintln!("{e:?}"),
-	}
+        match self.disable_raw_mode() {
+            Ok(_) => {}
+            Err(e) => eprintln!("{e:?}"),
+        }
     }
 }
 

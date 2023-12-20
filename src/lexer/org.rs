@@ -2,7 +2,6 @@ use crate::parser::token::{Token, TokenType};
 
 use super::Lexer;
 
-
 #[derive(Debug, Default, Clone)]
 pub struct OrgLexer {
     src: String,
@@ -10,7 +9,7 @@ pub struct OrgLexer {
     current: usize,
     line: usize,
 
-    heading_level: u8
+    heading_level: u8,
 }
 
 impl Lexer for OrgLexer {
@@ -23,7 +22,7 @@ impl Lexer for OrgLexer {
     }
 
     fn set_src(&mut self, src: &str) {
-	self.src = src.into();
+        self.src = src.into();
     }
 }
 
@@ -31,15 +30,15 @@ impl OrgLexer {
     #[inline(always)]
     #[must_use]
     pub const fn new() -> Self {
-	Self {
-	    src: String::new(),
-	    start: 0,
-	    current: 0,
-	    line: 0,
-	    heading_level: 0,
-	}
+        Self {
+            src: String::new(),
+            start: 0,
+            current: 0,
+            line: 0,
+            heading_level: 0,
+        }
     }
-    
+
     pub fn get_token(&mut self) -> Token {
         self.skip_whitespace();
         self.start = self.current;
@@ -60,7 +59,7 @@ impl OrgLexer {
         }
 
         while self.peek_cnow() != '#'
-	    && self.peek_cnow() != '['
+            && self.peek_cnow() != '['
             && self.peek_offset(0, 1) != '\n'
             && self.current < self.src.len()
         {
@@ -97,13 +96,13 @@ impl OrgLexer {
         }
     }
     pub fn link(&mut self) -> Token {
-	let mut nesting = 1;
+        let mut nesting = 1;
         while nesting > 0 {
-	    if self.peek_cnow() == ']' {
-		nesting -= 1
-	    } else if self.peek_cnow() == '[' {
-		nesting += 1;
-	    }
+            if self.peek_cnow() == ']' {
+                nesting -= 1
+            } else if self.peek_cnow() == '[' {
+                nesting += 1;
+            }
             self.advance_char();
         }
         self.make_token(TokenType::Link)

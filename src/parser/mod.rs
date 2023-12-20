@@ -39,7 +39,7 @@ impl Parser {
     }
 
     pub fn parse(&mut self, lexer: &mut impl Lexer) -> Presentation {
-	lexer.set_src(self.content.as_str());
+        lexer.set_src(self.content.as_str());
         let tokens = lexer.tokenize();
         println!("{tokens:#?}");
         let mut slides: Vec<Slide> = Vec::new();
